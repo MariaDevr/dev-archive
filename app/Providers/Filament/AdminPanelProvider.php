@@ -31,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->brandName(new HtmlString('
             <div style="display:flex; align-items:center; gap:8px;">
-                <img src="'.asset('assets/images/logo.png').'" style="height:40px;">
+                <img src="'.asset('assets/images/logoo.png').'" style="height:40px;">
                 <span>Dev Archive</span>
             </div>
             '))
