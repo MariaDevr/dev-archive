@@ -6,14 +6,19 @@ use App\Filament\Resources\CategoryResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListCategories extends ListRecords
+class ListCategory extends ListRecords
 {
     protected static string $resource = CategoryResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Nova Categoria'),
         ];
     }
+   /* protected function getTitle(): ?string
+    {
+        return null;
+    }*/
 }

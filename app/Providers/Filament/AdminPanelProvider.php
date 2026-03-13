@@ -16,6 +16,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
@@ -23,22 +24,27 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->topNavigation()
             ->default()
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandName(new HtmlString('
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="'.asset('assets/images/logoo.png').'" style="height:40px;">
+                <span>Dev Archive</span>
+            </div>
+            '))
+            ->brandLogoHeight('40px')
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => '#136539',
+                'secondary' => '#1b9859',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([
-                Pages\Dashboard::class,
-            ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -54,5 +60,9 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+    }
+    public static function auth(): ?string
+    {
+        return config('filament.auth.guard');
     }
 }
