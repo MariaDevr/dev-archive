@@ -9,6 +9,8 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -35,6 +37,15 @@ class AdminPanelProvider extends PanelProvider
                 <span>Dev Archive</span>
             </div>
             '))
+            ->assets([
+                Js::make('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js'),
+
+                Js::make('bladewind-js', asset('vendor/bladewind/js/helpers.js')),
+                Css::make('bladewind-css', asset('vendor/bladewind/css/bladewind-ui.min.css')),
+                Css::make('bladewind-animate', asset('vendor/bladewind/css/animate.min.css')),
+
+
+            ])
             ->brandLogoHeight('40px')
             ->colors([
                 'primary' => '#136539',

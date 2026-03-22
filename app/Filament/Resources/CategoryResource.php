@@ -6,6 +6,7 @@ use App\Filament\Resources\CategoryResource\Pages;
 use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -18,7 +19,7 @@ class CategoryResource extends Resource
     protected static ?string $model = Category::class;
     protected static ?int $navigationSort = 2;
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+
     protected static ?string $navigationLabel = 'Categorias';
 
     public static function form(Form $form): Form
@@ -32,9 +33,15 @@ class CategoryResource extends Resource
                                 ->required(),
                             TextInput::make('slug')
                                 ->label('Slug'),
-                            TextInput::make('icon')
-                                ->label('Icon')
-                                ->helperText('https://heroicons.com/')
+                            Select::make('icon')
+                                ->label('Ícone')
+                                ->options([
+                                    'heroicon-o-tag' => 'Tag',
+                                    'heroicon-o-folder' => 'Folder',
+                                    'heroicon-o-star' => 'Star',
+                                    'heroicon-o-bookmark' => 'Bookmark',
+                                ])
+                                ->searchable(),
                          ])
             ]);
     }
@@ -49,13 +56,14 @@ class CategoryResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('slug')
-                    ->label('Slug')
-                    ->searchable()
-                    ->toggleable(),
+                    ->label('slug')
+                    ->limit(40)
+                    ->url(fn ($record) => $record->url)
+                    ->openUrlInNewTab(),
 
                 IconColumn::make('icon')
                     ->label('Icon')
-                    ->icon(fn ($state) => $state)
+                    ->icon(fn ($state) => $state ?: 'heroicon-o-tag')
                     ->toggleable(),
 
                 TextColumn::make('created_at')
