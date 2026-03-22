@@ -38,9 +38,13 @@ class AdminPanelProvider extends PanelProvider
             </div>
             '))
             ->assets([
+                Js::make('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js'),
+
+                Js::make('bladewind-js', asset('vendor/bladewind/js/helpers.js')),
                 Css::make('bladewind-css', asset('vendor/bladewind/css/bladewind-ui.min.css')),
                 Css::make('bladewind-animate', asset('vendor/bladewind/css/animate.min.css')),
-                Js::make('bladewind-js', asset('vendor/bladewind/js/helpers.js')),
+
+
             ])
             ->brandLogoHeight('40px')
             ->colors([
