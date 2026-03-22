@@ -2,23 +2,21 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Resources\ContentResource;
 use App\Models\Content;
 use Filament\Pages\Page;
-use Filament\Tables;
-use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 
-class Code extends Page implements Tables\Contracts\HasTable
+class Code extends Page
 {
+    protected ?string $heading = '';
     protected static ?int $navigationSort = 4;
     protected static ?string $navigationLabel = "Códigos";
     protected static string $view = 'filament.pages.code';
-    use Tables\Concerns\InteractsWithTable;
+    public Collection $content;
 
-    public function table(Table $table): Table
+    public function mount(): void
     {
-        return $table
-            ->query(Content::query()->where('type', 'code'));
+        $this->content = Content::where('type', 'code')->get();
     }
 
 }
