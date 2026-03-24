@@ -1,0 +1,36 @@
+name: Continuos Integration
+on:
+  push:
+    branches: [ "main", "config-ci" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  phpunit:
+    name: PHPUnit (Laravel + Filament)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup PHP com Extensões
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, dom, curl, libxml, sqlite3, intl, bcmath, gd
+          tools: composer:v2
+      - name: Instalar Dependências (Composer)
+        run: composer install --prefer-dist --no-ansi --no-interaction --no-progress
+
+      - name: Preparar Ambiente
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          touch database/database.sqlite
+
+      - name: Executar Testes
+        run: php artisan test
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
