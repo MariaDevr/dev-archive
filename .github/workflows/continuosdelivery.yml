@@ -1,0 +1,25 @@
+name: Continuous Delivery
+
+on:
+  workflow_run:
+    workflows: ["Continuos Integration"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    name: Deploy (CD)
+    runs-on: ubuntu-latest
+
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    environment: production
+
+    steps:
+      - name: Simular deploy
+        run: |
+          echo "CI passou com sucesso"
+          echo "Aguardando aprovação para deploy..."
+          echo "Deploy iniciado 🚀"
+          echo "Aplicação Laravel pronta para produção"
+          echo "Deploy finalizado com sucesso ✅"
