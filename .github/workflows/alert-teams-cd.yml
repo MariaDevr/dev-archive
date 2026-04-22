@@ -15,4 +15,4 @@ jobs:
           -d '{
             "text": "Novo commit na main pelo autor ${{ github.actor }}"
           }' \
-          ${{ secrets.MSTEAMS_WEBHOOK }}
+          ${{ secrets.TEAMS_WEBHOOK_URL }}
