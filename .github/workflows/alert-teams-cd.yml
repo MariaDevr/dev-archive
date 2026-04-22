@@ -13,6 +13,6 @@ jobs:
         run: |
           curl -H 'Content-Type: application/json' \
           -d '{
-            "text": "Novo commit na main por ${{ github.actor }}"
+            "text": "Novo commit na main pelo autor ${{ github.actor }}"
           }' \
           ${{ secrets.MSTEAMS_WEBHOOK }}
