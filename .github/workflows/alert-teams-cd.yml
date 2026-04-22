@@ -1,0 +1,22 @@
+name: Alert Teams
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    types: [closed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Notify Microsoft Teams
+        uses: skitionek/notify-microsoft-teams@master
+        if: always()
+        with:
+          webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+          title: "Atualização no projeto"
+          text: "Commit feito por ${{ github.actor }}"
+
+
