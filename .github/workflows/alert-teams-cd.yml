@@ -1,18 +1,26 @@
 name: Alert Teams
 
 on:
-  push:
-    branches: ["main"]
+  workflow_run:
+    workflows: ["Continuous Integration"]
+    types:
+      - completed
 
 jobs:
   notify:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send message to Teams
+      - name: Notify success
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         run: |
-          curl -H 'Content-Type: application/json' \
-          -d '{
-            "text": "Novo commit na main pelo autor ${{ github.actor }}"
-          }' \
+          curl -H "Content-Type: application/json" \
+          -d '{"text":"CI passou com sucesso por ${{ github.actor }}"}' \
+          ${{ secrets.TEAMS_WEBHOOK_URL }}
+
+      - name: Notify failure
+        if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+        run: |
+          curl -H "Content-Type: application/json" \
+          -d '{"text":"❌ CI falhou no pipeline"}' \
           ${{ secrets.TEAMS_WEBHOOK_URL }}
