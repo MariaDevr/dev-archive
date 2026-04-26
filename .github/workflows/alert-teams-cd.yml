@@ -1,18 +1,57 @@
 name: Alert Teams
 
 on:
-  push:
-    branches: ["main"]
+  workflow_run:
+    workflows: ["Continuos Integration"]
+    types:
+      - completed
 
 jobs:
   notify:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Send message to Teams
+      - name: Enviar Alerta para o Teams
         run: |
-          curl -H 'Content-Type: application/json' \
-          -d '{
-            "text": "Novo commit na main por ${{ github.actor }}"
-          }' \
-          ${{ secrets.MSTEAMS_WEBHOOK }}
+
+          COLOR="Good"
+          if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
+            COLOR="Attention"
+          fi
+
+          curl -X POST -H "Content-Type: application/json" \
+          -d "{
+            \"type\": \"message\",
+            \"attachments\": [
+              {
+                \"contentType\": \"application/vnd.microsoft.card.adaptive\",
+                \"content\": {
+                  \"type\": \"AdaptiveCard\",
+                  \"body\": [
+                    {
+                      \"type\": \"TextBlock\",
+                      \"size\": \"Large\",
+                      \"weight\": \"Bolder\",
+                      \"text\": \"Status do Pipeline: dev-archive\"
+                    },
+                    {
+                      \"type\": \"FactSet\",
+                      \"facts\": [
+                        { \"title\": \"Workflow:\", \"value\": \"${{ github.event.workflow_run.name }}\" },
+                        { \"title\": \"Resultado:\", \"value\": \"${{ github.event.workflow_run.conclusion }}\" },
+                        { \"title\": \"Autor:\", \"value\": \"${{ github.actor }}\" }
+                      ]
+                    },
+                    {
+                      \"type\": \"TextBlock\",
+                      \"text\": \"Verifique os logs no GitHub Actions para mais detalhes.\",
+                      \"wrap\": true,
+                      \"color\": \"$COLOR\"
+                    }
+                  ],
+                  \"\$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",
+                  \"version\": \"1.4\"
+                }
+              }
+            ]
+          }" \
+          "${{ secrets.TEAMS_WEBHOOK_URL }}"
