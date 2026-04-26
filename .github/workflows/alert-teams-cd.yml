@@ -2,25 +2,56 @@ name: Alert Teams
 
 on:
   workflow_run:
-    workflows: ["Continuous Integration"]
+    workflows: ["Continuos Integration"]
     types:
       - completed
 
 jobs:
   notify:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Notify success
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+      - name: Enviar Alerta para o Teams
         run: |
-          curl -H "Content-Type: application/json" \
-          -d '{"text":"CI passou com sucesso por ${{ github.actor }}"}' \
-          ${{ secrets.TEAMS_WEBHOOK_URL }}
 
-      - name: Notify failure
-        if: ${{ github.event.workflow_run.conclusion == 'failure' }}
-        run: |
-          curl -H "Content-Type: application/json" \
-          -d '{"text":"❌ CI falhou no pipeline"}' \
-          ${{ secrets.TEAMS_WEBHOOK_URL }}
+          COLOR="Good"
+          if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
+            COLOR="Attention"
+          fi
+
+          curl -X POST -H "Content-Type: application/json" \
+          -d "{
+            \"type\": \"message\",
+            \"attachments\": [
+              {
+                \"contentType\": \"application/vnd.microsoft.card.adaptive\",
+                \"content\": {
+                  \"type\": \"AdaptiveCard\",
+                  \"body\": [
+                    {
+                      \"type\": \"TextBlock\",
+                      \"size\": \"Large\",
+                      \"weight\": \"Bolder\",
+                      \"text\": \"Status do Pipeline: dev-archive\"
+                    },
+                    {
+                      \"type\": \"FactSet\",
+                      \"facts\": [
+                        { \"title\": \"Workflow:\", \"value\": \"${{ github.event.workflow_run.name }}\" },
+                        { \"title\": \"Resultado:\", \"value\": \"${{ github.event.workflow_run.conclusion }}\" },
+                        { \"title\": \"Autor:\", \"value\": \"${{ github.actor }}\" }
+                      ]
+                    },
+                    {
+                      \"type\": \"TextBlock\",
+                      \"text\": \"Verifique os logs no GitHub Actions para mais detalhes.\",
+                      \"wrap\": true,
+                      \"color\": \"$COLOR\"
+                    }
+                  ],
+                  \"\$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",
+                  \"version\": \"1.4\"
+                }
+              }
+            ]
+          }" \
+          "${{ secrets.TEAMS_WEBHOOK_URL }}"
